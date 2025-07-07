@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 import threading  # Import Python's standard threading library
 
 import flet as ft
-<<<<<<< HEAD
+
 from flet import AppBar, Page, Container, Text, View, FontWeight, colors, TextButton, padding, ThemeMode, border_radius, Image as FletImage, FilePicker, FilePickerResultEvent, icons
 
 #from image_classifier.resnet50_archi import resnet50
@@ -32,31 +32,31 @@ deb_capt = False
 #    aws_access_key_id=AWS_ACCESS_KEY_ID,
 #    aws_secret_access_key=AWS_SECRET_ACCESS_KEY
 #)
-=======
+
 from flet import (
     AppBar, Page, Container, Text, View, FontWeight,
     TextButton, padding, ThemeMode, border_radius,
     FilePicker, FilePickerResultEvent, icons, MainAxisAlignment,
     CrossAxisAlignment, ScrollMode, ImageFit, colors
 )
->>>>>>> 810b0f0d25b056eb0a735be57fecfa96e9bc1b31
 
 # --- HUAWEI CLOUD SDK IMPORTS ---
-from huaweicloudsdkcore.auth.credentials import BasicCredentials
-from huaweicloudsdkcore.exceptions import exceptions
-from huaweicloudsdkocr.v1 import *
-from huaweicloudsdkocr.v1.region.ocr_region import OcrRegion
+
+#from huaweicloudsdkcore.auth.credentials import BasicCredentials
+#from huaweicloudsdkcore.exceptions import exceptions
+#from huaweicloudsdkocr.v1 import *
+#from huaweicloudsdkocr.v1.region.ocr_region import OcrRegion
 
 # --- CONFIGURATION ---
 # Load environment variables from .env file
-load_dotenv()
+#load_dotenv()
 
 # Huawei Cloud Credentials
-AK = os.getenv("HC_OCR_ACCESS_KEY_ID")
-SK = os.getenv("HC_OCR_SECRET_ACCESS_KEY_ID")
-REGION = os.getenv("HC_OCR_REGION")
-PROJECT_ID = os.getenv("HC_OCR_PROJECT_ID")
-ENDPOINT = f"ocr.{REGION}.myhuaweicloud.com"
+#AK = os.getenv("HC_OCR_ACCESS_KEY_ID")
+#SK = os.getenv("HC_OCR_SECRET_ACCESS_KEY_ID")
+#REGION = os.getenv("HC_OCR_REGION")
+#PROJECT_ID = os.getenv("HC_OCR_PROJECT_ID")
+#ENDPOINT = f"ocr.{REGION}.myhuaweicloud.com"
 
 # --- GLOBAL VARIABLES ---
 # OpenCV camera setup
@@ -159,9 +159,9 @@ def draw_bounding_boxes_huawei(image_path, locations):
 # --- FLET APP MAIN FUNCTION ---
 
 def main(page: Page):
-    page.title = "OCR Project"
+    page.title = "CPE180P"
 
-    page.theme_mode = ThemeMode.LIGHT
+    page.theme_mode = ThemeMode.DARK
     page.window.width = 1200
     page.window.height = 800
     page.fonts = {
@@ -340,16 +340,57 @@ def main(page: Page):
     page.overlay.append(file_picker)
 
     # -- Upload Page Components --
-    initial_image_button = ft.Image(src="assets/result_initial.png", width=350, height=350, border_radius=border_radius.all(10))
-    select_image_button = TextButton(content=initial_image_button, on_click=lambda _: file_picker.pick_files(allow_multiple=False, allowed_extensions=["png", "jpg", "jpeg", "bmp", "tiff"]))
-    restart_button_upload = TextButton(content=Text("Start over", font_family="Minecraft", size=14), visible=False, on_click=restart_upload_flow)
-    prompt_display_upload = Container(height=450, content=ft.Column(scroll=ScrollMode.ADAPTIVE))
-    prompt_container_upload = Container(content=ft.Column([Text("Extracted Text:", font_family="Minecraft", size=16), prompt_display_upload]), visible=False)
+    initial_image_button = ft.Image(src="assets/result_initial.png", 
+                                    width=350, 
+                                    height=350, 
+                                    border_radius=border_radius.all(10))
+    select_image_button = TextButton(content=initial_image_button, 
+                                     on_click=lambda _: file_picker.pick_files(allow_multiple=False, 
+                                                                               allowed_extensions=["png", "jpg", "jpeg", "bmp", "tiff"]))
+    restart_button_upload = TextButton(content=Text("Start over", 
+                                                    font_family="Minecraft", 
+                                                    size=14), 
+                                                visible=False, 
+                                                on_click=restart_upload_flow)
+    prompt_display_upload = Container(height=450, 
+                                      content=ft.Column(scroll=ScrollMode.ADAPTIVE))
+    prompt_container_upload = Container(content=ft.Column([Text("Extracted Text:", 
+                                                                font_family="Minecraft", 
+                                                                size=16), 
+                                                prompt_display_upload]), 
+                                        visible=False)
 
     # -- Camera Page Components --
-    capture_button = ft.ElevatedButton("Capture", icon=icons.CAMERA, on_click=trigger_capture)
-    process_button = ft.ElevatedButton("Process Card", icon=icons.CHECK, on_click=on_process_camera_image)
-    retake_button = ft.ElevatedButton("Retake", icon=icons.REFRESH, on_click=clear_capture)
+    capture_button = ft.ElevatedButton("Capture", 
+                                       icon=icons.CAMERA, 
+                                       on_click=trigger_capture,
+                                       style=ft.ButtonStyle(
+                                            text_style=ft.TextStyle(
+                                                size=16,
+                                                font_family="Minecraft",
+                                                color=ft.colors.BLACK
+                                            )
+                                    ))
+    process_button = ft.ElevatedButton("Process Card", 
+                                       icon=icons.CHECK, 
+                                       on_click=on_process_camera_image, 
+                                       style=ft.ButtonStyle(
+                                            text_style=ft.TextStyle(
+                                                size=16,
+                                                font_family="Minecraft",
+                                                color=ft.colors.BLACK
+                                            )
+                                        ))
+    retake_button = ft.ElevatedButton("Retake", 
+                                      icon=icons.REFRESH, 
+                                      on_click=clear_capture,
+                                      style=ft.ButtonStyle(
+                                            text_style=ft.TextStyle(
+                                                size=16,
+                                                font_family="Minecraft",
+                                                color=ft.colors.BLACK
+                                            )
+                                    ))
     restart_button_cam = TextButton(content=Text("Start over", font_family="Minecraft", size=14), visible=False, on_click=restart_cam_flow)
     prompt_display_cam = Container(height=450, content=ft.Column(scroll=ScrollMode.ADAPTIVE))
     prompt_container_cam = Container(content=ft.Column([Text("Extracted Text:", font_family="Minecraft", size=16), prompt_display_cam]), visible=False)
@@ -360,25 +401,79 @@ def main(page: Page):
         page.views.append(
             View(
                 "/",
-
                 [
-                    AppBar(title=Text("OCR", font_family="Minecraft", size=40), bgcolor=colors.SURFACE_VARIANT),
-                    Container(
-                        content=ft.Column([
-                            Text("IMAGE-TO-TEXT APPLICATION", font_family="Minecraft", size=40, weight=FontWeight.W_800),
-                            Text("Powered by Huawei Cloud OCR", font_family="Minecraft", size=20, weight=FontWeight.W_500),
-                        ]),
-                        padding=padding.only(left=100, top=70)
+                    AppBar(
+                        title=Text("CPE180P", font_family="Minecraft", size=40), 
+                        bgcolor=colors.SURFACE_VARIANT
                     ),
-                    ft.Row([
-                        Container(ft.ElevatedButton("Upload Card", on_click=lambda _: page.go("/ocr")), padding=padding.only(left=100, top=70)),
-                        Container(ft.ElevatedButton("Capture Card", on_click=lambda _: page.go("/camocr")), padding=padding.only(left=100, top=70)),
-                    ])
+                    
+                    # Main centered content
+                    Container(
+                        content=ft.Column(
+                            [
+                                Text(
+                                    "Philippine Motorcycle License Plate Detection", 
+                                    font_family="Minecraft", 
+                                    size=60, 
+                                    weight=FontWeight.W_800,
+                                    text_align=ft.TextAlign.CENTER
+                                ),
+                                
+                                Text(
+                                    "Powered by Huawei Cloud OCR", 
+                                    font_family="Minecraft", 
+                                    size=20, 
+                                    weight=FontWeight.W_500,
+                                    text_align=ft.TextAlign.CENTER,
+                                    italic=True
+                                ),
+                                
+                                # Centered buttons row
+                                Container(
+                                    content=ft.Row(
+                                        [
+                                            ft.ElevatedButton(
+                                                "Upload Card", 
+                                                on_click=lambda _: page.go("/ocr"),
+                                                style=ft.ButtonStyle(
+                                                    text_style=ft.TextStyle(
+                                                        size=30,
+                                                        font_family="Minecraft",
+                                                        color=ft.colors.WHITE
+                                                    ),
+                                                    padding=ft.padding.symmetric(horizontal=40, vertical=20)
+                                                )
+                                            ),
+                                            ft.ElevatedButton(
+                                                "Capture Card", 
+                                                on_click=lambda _: page.go("/camocr"),
+                                                style=ft.ButtonStyle(
+                                                    text_style=ft.TextStyle(
+                                                        size=30,
+                                                        font_family="Minecraft",
+                                                        color=ft.colors.WHITE
+                                                    ),
+                                                    padding=ft.padding.symmetric(horizontal=40, vertical=20)
+                                                )
+                                            ),
+                                        ],
+                                        spacing=40,
+                                        alignment=ft.MainAxisAlignment.CENTER
+                                    ),
+                                    padding=ft.padding.only(top=70)
+                                )
+                            ],
+                            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                            spacing=40
+                        )
+                    )
                 ],
-                vertical_alignment=MainAxisAlignment.START,
-                horizontal_alignment=CrossAxisAlignment.START
+                vertical_alignment=MainAxisAlignment.CENTER,
+                horizontal_alignment=CrossAxisAlignment.CENTER
             )
         )
+
+
         if page.route == "/camocr":
             global deb_capt
             deb_capt = False # Reset flag when navigating to camera page
@@ -386,7 +481,7 @@ def main(page: Page):
                 View(
                     "/camocr",
                     [
-                        AppBar(title=Text("Capture Card"), bgcolor=colors.SURFACE_VARIANT),
+                        AppBar(title=Text("Capture Card", font_family="Minecraft"), bgcolor=colors.SURFACE_VARIANT),
                         ft.Row(
                             [
                                 ft.Column([
@@ -418,14 +513,16 @@ def main(page: Page):
                 View(
                     "/ocr",
                     [
-                        AppBar(title=Text("Upload Card"), bgcolor=colors.SURFACE_VARIANT),
+                        AppBar(title=Text("Upload Card", font_family="Minecraft"), bgcolor=colors.SURFACE_VARIANT),
                         ft.Row(
                             [
                                 ft.Column([
                                     result_image_upload,
                                     select_image_button,
                                     restart_button_upload,
-                                ], horizontal_alignment=CrossAxisAlignment.CENTER),
+                                    
+                                ], 
+                                horizontal_alignment=CrossAxisAlignment.CENTER),
                                 ft.VerticalDivider(),
                                 Container(
                                     content=prompt_container_upload,
@@ -434,7 +531,7 @@ def main(page: Page):
                                     expand=True
                                 ),
                             ],
-                            vertical_alignment=CrossAxisAlignment.START,
+                            vertical_alignment=CrossAxisAlignment.CENTER,
                             alignment=MainAxisAlignment.CENTER,
                             expand=True
                         )
@@ -454,12 +551,13 @@ def main(page: Page):
 
 
 if __name__ == "__main__":
-    if not all([AK, SK, REGION, PROJECT_ID]):
-        print("\n" + "="*60)
-        print("!!! IMPORTANT: Missing one or more environment variables. !!!")
-        print("!!! Please ensure HC_OCR_ACCESS_KEY_ID,                  !!!")
-        print("!!! HC_OCR_SECRET_ACCESS_KEY_ID, HC_OCR_REGION, and      !!!")
-        print("!!! HC_OCR_PROJECT_ID are set in your .env file.          !!!")
-        print("="*60 + "\n")
-    else:
-        ft.app(target=main, assets_dir="assets")
+    #if not all([AK, SK, REGION, PROJECT_ID]):
+    #    print("\n" + "="*60)
+    #    print("!!! IMPORTANT: Missing one or more environment variables. !!!")
+    #    print("!!! Please ensure HC_OCR_ACCESS_KEY_ID,                  !!!")
+    #    print("!!! HC_OCR_SECRET_ACCESS_KEY_ID, HC_OCR_REGION, and      !!!")
+    #    print("!!! HC_OCR_PROJECT_ID are set in your .env file.          !!!")
+    #    print("="*60 + "\n")
+    #else:
+    
+    ft.app(target=main, assets_dir="assets")
