@@ -69,7 +69,7 @@ class MotorcycleDAL:
                 "violations": violations
             }
             self.collection.insert_one(motorcycle_doc)
-            print(f"Successfully inserted motorcycle with plate: {plate_number}")
+            print(f"Successfully inserted motorcycle with plate: {plate_number} in region: {region}")
             return True
         except DuplicateKeyError:
             print(f"Error: A motorcycle with plate number '{plate_number}' already exists.")
@@ -211,26 +211,43 @@ deb_capt = False
 
 # --- HUAWEI OCR FUNCTIONS ---
 def get_ocr_result_with_boxes(image_path: str):
+    """
+    Calls Huawei OCR and distinguishes plate number from region based on vertical position.
+    Returns: plate_number, region, all_locations, error_message
+    """
     try:
         credentials = BasicCredentials(ak=AK, sk=SK, project_id=PROJECT_ID)
         client = OcrClient.new_builder().with_credentials(credentials).with_endpoint(ENDPOINT).build()
         with open(image_path, "rb") as f:
             image_base64 = base64.b64encode(f.read()).decode("utf-8")
+        
         request_body = GeneralTextRequestBody(image=image_base64)
         request = RecognizeGeneralTextRequest(body=request_body)
         response = client.recognize_general_text(request)
+
         if response.result and response.result.words_block_list:
-            all_text = [block.words for block in response.result.words_block_list]
-            locations = [block.location for block in response.result.words_block_list]
-            # Clean up the text result to be a single line
-            cleaned_text = "".join(all_text).replace("\n", "").strip()
-            return cleaned_text, locations, None
+            # Sort blocks by their vertical position (top to bottom)
+            # The location is a list of 4 [x, y] points. We use the y-coord of the first point.
+            sorted_blocks = sorted(response.result.words_block_list, key=lambda b: b.location[0][1])
+            
+            all_locations = [block.location for block in sorted_blocks]
+            
+            plate_number = ""
+            region = ""
+
+            if len(sorted_blocks) >= 1:
+                plate_number = sorted_blocks[0].words.strip()
+            if len(sorted_blocks) >= 2:
+                region = sorted_blocks[1].words.strip()
+
+            return plate_number, region, all_locations, None
         else:
-            return "No text found.", [], None
+            return "No text found.", "", [], None
+            
     except exceptions.ClientRequestException as e:
-        return None, None, f"API Error: {e.error_code}\n{e.error_msg}"
+        return None, None, None, f"API Error: {e.error_code}\n{e.error_msg}"
     except Exception as e:
-        return None, None, f"An unexpected error occurred: {e}"
+        return None, None, None, f"An unexpected error occurred: {e}"
 
 def draw_bounding_boxes_huawei(image_path, locations):
     if not locations:
@@ -262,8 +279,9 @@ def main(page: Page):
     result_image_upload = ft.Image(src="assets/result_initial.png", width=400, height=300, border_radius=border_radius.all(10), fit=ImageFit.CONTAIN, visible=False)
     result_image_cam = ft.Image(src="assets/result_initial.png", width=400, height=300, border_radius=border_radius.all(10), fit=ImageFit.CONTAIN, visible=False)
     
-    # Text field to hold the detected plate number
+    # Text fields for detected plate and region
     detected_plate_field = TextField(label="Detected Plate Number", read_only=True, width=400)
+    detected_region_field = TextField(label="Detected Region", read_only=True, width=400)
     
     # A dedicated container for progress/error messages
     status_message_container = Container(content=None, height=50)
@@ -338,8 +356,9 @@ def main(page: Page):
     # --- DB Button Event Handlers ---
     def add_license(e):
         plate = detected_plate_field.value
+        region = detected_region_field.value or "REGION UNKNOWN"
         if plate:
-            dal.insert_motorcycle(plate, "REGION UNKNOWN")
+            dal.insert_motorcycle(plate, region)
             update_db_buttons_state(plate)
 
     def flag_blacklisted(e):
@@ -409,6 +428,7 @@ def main(page: Page):
         prompt_container_cam.visible = False
         db_controls_container.visible = False
         detected_plate_field.value = ""
+        detected_region_field.value = ""
         capture_button.visible = True
         process_button.visible = True
         retake_button.visible = True
@@ -424,7 +444,7 @@ def main(page: Page):
         prompt_container_ctrl.visible = True
         page.update()
 
-        text_result, locations, error = get_ocr_result_with_boxes(image_path)
+        plate_number, region, locations, error = get_ocr_result_with_boxes(image_path)
 
         # Clear loading indicator
         status_message_container.content = None
@@ -433,12 +453,14 @@ def main(page: Page):
             status_message_container.content = Text(f"Error: {error}", color=colors.RED, size=12)
             result_image_ctrl.src = image_path
             detected_plate_field.value = ""
+            detected_region_field.value = ""
             db_controls_container.visible = False
         else:
             annotated_path = draw_bounding_boxes_huawei(image_path, locations)
             result_image_ctrl.src = annotated_path
-            detected_plate_field.value = text_result
-            update_db_buttons_state(text_result)
+            detected_plate_field.value = plate_number
+            detected_region_field.value = region
+            update_db_buttons_state(plate_number)
         
         result_image_ctrl.visible = True
         page.update()
@@ -468,6 +490,7 @@ def main(page: Page):
         prompt_container_upload.visible = False
         db_controls_container.visible = False
         detected_plate_field.value = ""
+        detected_region_field.value = ""
         page.update()
 
     # --- UI Definitions ---
@@ -479,7 +502,8 @@ def main(page: Page):
     restart_button_upload = TextButton(content=Text("Start over", size=14), visible=False, on_click=restart_upload_flow)
     prompt_container_upload = Container(content=Column([
         Text("OCR Result:", size=16), 
-        detected_plate_field, 
+        detected_plate_field,
+        detected_region_field,
         status_message_container,
         db_controls_container
     ]), visible=False)
@@ -490,7 +514,8 @@ def main(page: Page):
     restart_button_cam = TextButton(content=Text("Start over", size=14), visible=False, on_click=clear_capture)
     prompt_container_cam = Container(content=Column([
         Text("OCR Result:", size=16), 
-        detected_plate_field, 
+        detected_plate_field,
+        detected_region_field,
         status_message_container,
         db_controls_container
     ]), visible=False)
