@@ -24,23 +24,21 @@ from flet import AppBar, Page, Container, Text, View, FontWeight, colors, TextBu
 first_prompt_entered = True
 first_prompt_entered_cam = True
 
-# Load environment variables
-load_dotenv()
-AWS_REGION = os.getenv("AWS_REGION_TEXTRACT")
-AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID_TEXTRACT")
-AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY_TEXTRACT")
 
-# OpenCV camera
-cap = cv2.VideoCapture(1)
+load_dotenv()
+#AWS_REGION = os.getenv("AWS_REGION_TEXTRACT")
+#AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID_TEXTRACT")
+#AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY_TEXTRACT")
+
+cap = cv2.VideoCapture(0)
 deb_capt = False
 
-# AWS Textract Client
-client = boto3.client(
-    'textract',
-    region_name=AWS_REGION,
-    aws_access_key_id=AWS_ACCESS_KEY_ID,
-    aws_secret_access_key=AWS_SECRET_ACCESS_KEY
-)
+#client = boto3.client(
+#    'textract',
+#    region_name=AWS_REGION,
+#    aws_access_key_id=AWS_ACCESS_KEY_ID,
+#    aws_secret_access_key=AWS_SECRET_ACCESS_KEY
+#)
 
 def ShowBoundingBox(draw, box, width, height, boxColor):
     left = width * box['Left']
@@ -131,7 +129,8 @@ def extract_key_values(response):
 def main(page: Page):
 
     page.title = "OCR Project"
-    page.theme_mode = ThemeMode.LIGHT
+    page.theme = ft.Theme(color_scheme_seed=colors.BLACK)
+    page.theme_mode=ft.ThemeMode.DARK,
 
     page.fonts = {
         "RobotoFlex": f"fonts/RobotoFlex-VariableFont.ttf",
@@ -171,7 +170,6 @@ def main(page: Page):
         except Exception as e:
             print(f"Error: {e}")
 
-    # Capture Frames
     def trigger_capture(e):
         global deb_capt
         src_base64_img = captured_frame.src_base64
@@ -424,7 +422,7 @@ def main(page: Page):
             View(
                 "/",
                 [ # title_spacing=50
-                    AppBar( title=Text("OCR", font_family="Minecraft", size=40, weight=FontWeight.W_700, color="#000000"), bgcolor="#fffff", toolbar_height=120,
+                    AppBar( title=Text("OCR", font_family="Minecraft", size=40, weight=FontWeight.W_700, color="#ffffff"), bgcolor="#000000", toolbar_height=120,
                            actions=[
                                TextButton(content=Container(Text("GitHub", font_family="Minecraft", size=18, weight=FontWeight.W_400, color="#000000"), padding=padding.only(right=25, left=25)), url="https://github.com/rjldg/OCR_project"),
                                TextButton(content=Container(Text("About Us", font_family="Minecraft", size=18, weight=FontWeight.W_400, color="#000000"), padding=padding.only(right=25, left=25)), on_click=lambda _: page.go("/aboutus"))
@@ -433,9 +431,9 @@ def main(page: Page):
                     Container(
                         content=ft.Column(
                             [
-                                Text("IMAGE-TO-TEXT APPLICATION\nUSING OPTICAL CHARACTER RECOGNITION", font_family="Minecraft", size=40, weight=FontWeight.W_800, color="#000000"),
-                                Text("GREATEST PROJECT EVER MADE.", font_family="Minecraft", size=20, weight=FontWeight.W_500, color="#000000"),
-                                Text("CPE179P - ARTIFICIAL INTELLIGENCE", font_family="Minecraft", size=14, weight=FontWeight.W_300, color="#000000"),
+                                Text("Philippine Motorcycle License Plate Optical Character Recognition (OCR)", font_family="Minecraft", size=40, weight=FontWeight.W_800, color="#000000"),
+                                Text("using Huawei Cloud with Nvidia Jetson Nano and MongoDB", font_family="Minecraft", size=20, weight=FontWeight.W_500, color="#000000"),
+                                Text("CPE180P - ARTIFICIAL INTELLIGENCE", font_family="Minecraft", size=14, weight=FontWeight.W_300, color="#000000"),
                             ]
                         ),
                         padding=padding.only(left=100, top=70)
