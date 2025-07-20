@@ -1,7 +1,3 @@
-# motorcycle_dal.py
-# This script provides a Data Access Layer (DAL) for interacting with
-# a 'motorcycles' collection in a MongoDB database.
-
 from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError
 
