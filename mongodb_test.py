@@ -2,8 +2,15 @@
 # This script provides a Data Access Layer (DAL) for interacting with
 # a 'motorcycles' collection in a MongoDB database.
 
+import os
+
 from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError
+from dotenv import load_dotenv
+
+load_dotenv()
+
+MONGO_URI = os.getenv("MONGO_URI")
 
 class MotorcycleDAL:
     """
@@ -171,7 +178,7 @@ class MotorcycleDAL:
 if __name__ == "__main__":
     # IMPORTANT: Replace with your actual connection string.
     # It is recommended to use environment variables for credentials in production.
-    URI = "mongodb+srv://AISpec:pads123@ai-spec.deyll.mongodb.net/"
+    URI = MONGO_URI
     
     # Instantiate the Data Access Layer
     dal = MotorcycleDAL(URI)
