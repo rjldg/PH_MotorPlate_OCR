@@ -17,8 +17,8 @@ To develop an accurate real-world motorcycle license plate classification system
 
 ## Requirements
 
-Before running the application, make sure the following Python packages are installed:
+Before running the application, make sure the following packages are installed:
 
 ### Install via pip: 
 ```bash
-pip install boto3 flet python-dotenv pillow
+pip install pymongo python-dotenv flet opencv-python Pillow huaweicloudsdkocr
