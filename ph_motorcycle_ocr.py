@@ -263,9 +263,9 @@ def draw_bounding_boxes_huawei(image_path, locations):
 # --- FLET APP MAIN FUNCTION ---
 def main(page: Page):
     page.title = "License Plate OCR and DB Management"
-    page.theme_mode = ThemeMode.LIGHT
+    page.theme_mode = ThemeMode.DARK
     page.window.width = 1200
-    page.window.height = 850
+    page.window.height = 650
 
     # --- DAL INSTANCE ---
     dal = MotorcycleDAL(MONGO_URI)
