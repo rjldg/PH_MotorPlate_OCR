@@ -100,7 +100,7 @@ class MotorcycleDAL:
                 print(f"Successfully updated '{field_to_update}' for plate {plate_number} to {status}.")
                 return True
             else:
-                print(f"Error: No motorcycle found with plate number '{plate_number}'.")
+                print(f"Error: No motorcycle details found with plate number '{plate_number}'.")
                 return False
         except Exception as e:
             print(f"An unexpected error occurred during update: {e}")
@@ -136,10 +136,10 @@ class MotorcycleDAL:
                 {"$set": statuses_to_clear}
             )
             if result.matched_count > 0:
-                print(f"Successfully cleared all statuses for plate: {plate_number}.")
+                print(f"Successfully cleared all Known statuses for plate: {plate_number}.")
                 return True
             else:
-                print(f"Error: No motorcycle found with plate number '{plate_number}'.")
+                print(f"Error: No motorcycle details found with plate number '{plate_number}'.")
                 return False
         except Exception as e:
             print(f"An unexpected error occurred while clearing statuses: {e}")
@@ -152,10 +152,10 @@ class MotorcycleDAL:
         try:
             result = self.collection.delete_one({"plate_number": plate_number})
             if result.deleted_count > 0:
-                print(f"Successfully deleted motorcycle with plate: {plate_number}")
+                print(f"Successfully deleted motorcycle with plate: {plate_number}!")
                 return True
             else:
-                print(f"Error: No motorcycle found with plate number '{plate_number}' to delete.")
+                print(f"Error: No motorcycle details found with plate number '{plate_number}' for deletion.")
                 return False
         except Exception as e:
             print(f"An unexpected error occurred during deletion: {e}")
@@ -171,8 +171,9 @@ class MotorcycleDAL:
         """Closes the connection to the database."""
         if self.client:
             self.client.close()
-            print("Database connection closed.")
-
+            print("Connection to Database closed.")
+    def __str__(self):
+        return f"MotorcycleDAL(db={self.db.name}, collection={self.collection.name})"
 
 # --- Main execution block to demonstrate the DAL's functionality ---
 if __name__ == "__main__":
