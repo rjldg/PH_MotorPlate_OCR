@@ -22,12 +22,10 @@ Before running the application, make sure the following are installed:
 ### 1. Download and install [Python 3.9.19](https://www.python.org/downloads/release/python-3919/)
 
 ### 2. Set up a Python Virtual Environment
-    ```bash
     python -m venv venv
     source venv/bin/activate  # On Windows: venv\Scripts\activate
 
 ### 3. Install packages via Terminal:
-    ```bash
     pip install -r requirements.txt
 
 ### 4. Set up a Cloud Database in [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
